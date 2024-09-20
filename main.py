@@ -5,7 +5,7 @@ import sys
 from aiogram import Bot, Dispatcher
 from dotenv import load_dotenv
 
-from core.router import setup_routers
+from core import setup_routers
 from core.web import start_web_app
 from tools.utils import config
 
