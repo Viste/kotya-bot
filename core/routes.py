@@ -30,22 +30,7 @@ async def work_send_tax(message: types.Message):
     else:
         logging.info('info about message %s', message)
         logging.info('id of file %s', message.photo[-1].file_id)
-        if message.chat.first_name is None:
-            sender_name = message.chat.username
-        elif message.chat.first_name == "":
-            sender_name = message.chat.username
-        elif message.chat.first_name == "\xad":
-            sender_name = message.chat.username
-        else:
-            sender_name = message.chat.first_name
-
-        if message.chat.last_name is None:
-            sender_lastname = ' '
-        else:
-            sender_lastname = message.chat.last_name
-
-        text = f"Котю прислал: {sender_name} {sender_lastname}"
-        await memes.send_photo(channel, photo=message.photo[-1].file_id, caption=text)
+        await memes.send_photo(channel, photo=message.photo[-1].file_id)
         await message.reply("Спасибо за котю! Пока-пока")
 
 
@@ -58,17 +43,8 @@ async def work_send_demo(message: types.Message):
     else:
         logging.info('info about message %s', message)
         logging.info('id of file %s', message.video.file_id)
-        if message.chat.first_name is None:
-            sender_name = message.chat.username
-        else:
-            sender_name = message.chat.first_name
-        if message.chat.last_name is None:
-            sender_lastname = ' '
-        else:
-            sender_lastname = message.chat.last_name
         content = message.video.file_id
-        text = f"Котю прислал: {sender_name} {sender_lastname}"
-        await memes.send_video(channel, video=content, caption=text)
+        await memes.send_video(channel, video=content)
         await message.reply("Спасибо за котю! Пока-пока")
 
 
