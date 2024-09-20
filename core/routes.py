@@ -44,9 +44,9 @@ async def work_send_tax(message: types.Message):
         else:
             sender_lastname = message.chat.last_name
 
-        text = f"Мем прислал: {sender_name} {sender_lastname}"
+        text = f"Котю прислал: {sender_name} {sender_lastname}"
         await memes.send_photo(channel, photo=message.photo[-1].file_id, caption=text)
-        await message.reply("Спасибо за мем! Пока-пока")
+        await message.reply("Спасибо за котю! Пока-пока")
 
 
 @router.message(F.content_type.in_({'video'}), F.chat.type == "private")
@@ -67,9 +67,9 @@ async def work_send_demo(message: types.Message):
         else:
             sender_lastname = message.chat.last_name
         content = message.video.file_id
-        text = f"Мем прислал: {sender_name} {sender_lastname}"
+        text = f"Котю прислал: {sender_name} {sender_lastname}"
         await memes.send_video(channel, video=content, caption=text)
-        await message.reply("Спасибо за мем! Пока-пока")
+        await message.reply("Спасибо за котю! Пока-пока")
 
 
 @router.message(F.chat.type.in_({'group', 'supergroup'}))
