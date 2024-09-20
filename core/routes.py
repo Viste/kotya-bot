@@ -22,16 +22,26 @@ async def start_handler(message: types.Message):
 
 
 @router.message(F.content_type.in_({'photo'}), F.chat.type == "private")
-async def work_send_tax(message: types.Message):
+async def work_send_cat(message: types.Message):
     uid = message.from_user.id
     if uid in config.banned_user_ids:
         text = "не хочу с тобой разговаривать"
         await message.reply(text, parse_mode=None)
     else:
         logging.info('info about message %s', message)
-        logging.info('id of file %s', message.photo[-1].file_id)
-        await memes.send_photo(channel, photo=message.photo[-1].file_id)
-        await message.reply("Спасибо за котю! Пока-пока")
+
+        if message.media_group_id:
+            media_group = []
+            for photo in message.photo:
+                media_group.append(types.InputMediaPhoto(photo.file_id))
+                logging.info('id of file %s', photo.file_id)
+
+            await memes.send_media_group(channel, media=media_group)
+            await message.reply("Спасибо за котиков! Пока-пока")
+        else:
+            logging.info('id of file %s', message.photo[-1].file_id)
+            await memes.send_photo(channel, photo=message.photo[-1].file_id)
+            await message.reply("Спасибо за котю! Пока-пока")
 
 
 @router.message(F.content_type.in_({'video'}), F.chat.type == "private")
