@@ -1,5 +1,6 @@
 import html
 import logging
+import asyncio
 
 from aiogram import types, F, Router
 from aiogram.filters.command import Command
@@ -12,6 +13,21 @@ from tools.utils import is_spam, group_id
 logger = logging.getLogger(__name__)
 router = Router()
 channel = config.channel
+media_groups = {}
+media_group_timers = {}
+
+
+async def send_media_group(group_id, caption):
+    if group_id in media_groups:
+        media_groups[group_id][0].caption = caption
+        await memes.send_media_group(channel, media=media_groups[group_id])
+        del media_groups[group_id]
+        del media_group_timers[group_id]
+
+
+async def group_send_delay(group_id, caption):
+    await asyncio.sleep(5)
+    await send_media_group(group_id, caption)
 
 
 @router.message(Command(commands="start", ignore_case=True), F.chat.type == "private")
@@ -30,17 +46,24 @@ async def work_send_cat(message: types.Message):
     else:
         logging.info('info about message %s', message)
 
-        if message.media_group_id:
-            media_group = []
-            for photo in message.photo:
-                media_group.append(types.InputMediaPhoto(photo.file_id))
-                logging.info('id of file %s', photo.file_id)
+        caption = message.caption if message.caption else ""
 
-            await memes.send_media_group(channel, media=media_group)
-            await message.reply("Спасибо за котиков! Пока-пока")
+        if message.media_group_id:
+            group_id = message.media_group_id
+
+            if group_id not in media_groups:
+                media_groups[group_id] = []
+
+            media_groups[group_id].append(types.InputMediaPhoto(media=message.photo[-1].file_id))
+
+            logging.info('id of file %s', message.photo[-1].file_id)
+
+            if group_id not in media_group_timers:
+                media_group_timers[group_id] = asyncio.create_task(group_send_delay(group_id, caption))
+
         else:
             logging.info('id of file %s', message.photo[-1].file_id)
-            await memes.send_photo(channel, photo=message.photo[-1].file_id)
+            await memes.send_photo(channel, photo=message.photo[-1].file_id, caption=caption)
             await message.reply("Спасибо за котю! Пока-пока")
 
 
